@@ -11,8 +11,7 @@ public class EmployeePayrollService {
     public static void main(String[] args) {
     EmployeePayrollService service = new EmployeePayrollService();
 
-    service.updateSalary("Terisa", 4000000);  // update again
-    service.readData();
+    service.getEmployeesByDateRange("2018-01-01", "2020-12-31");
 }
 
     // 🔥 UC3: Update Salary
@@ -36,7 +35,34 @@ public void updateSalary(String name, double salary) {
         e.printStackTrace();
     }
 }
+// 🔥 UC5: Retrieve employees by date range
+public void getEmployeesByDateRange(String startDate, String endDate) {
 
+    String query = "SELECT * FROM employee_payroll WHERE start BETWEEN ? AND ?";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
+
+        // Set date parameters
+        ps.setDate(1, Date.valueOf(startDate));
+        ps.setDate(2, Date.valueOf(endDate));
+
+        ResultSet rs = ps.executeQuery();
+
+        System.out.println("Employees between " + startDate + " and " + endDate + ":");
+
+        while (rs.next()) {
+            System.out.println(
+                    rs.getInt("id") + " | " +
+                    rs.getString("name") + " | " +
+                    rs.getDouble("salary") + " | " +
+                    rs.getDate("start"));
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
     // UC2 reused
     public void readData() {
         try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD)) {
