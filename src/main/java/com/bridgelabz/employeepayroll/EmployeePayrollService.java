@@ -9,10 +9,60 @@ public class EmployeePayrollService {
     private static final String PASSWORD = "1234";
 
     //main
-   public static void main(String[] args) {
+  public static void main(String[] args) {
     EmployeePayrollService service = new EmployeePayrollService();
 
-    service.getEmployeesAfterDate("2019-01-01");
+    Employee emp = new Employee(
+            "David",
+            3200000,
+            Date.valueOf("2023-01-10"),
+            "M"
+    );
+
+    service.addEmployeeObject(emp);
+    service.readData();
+}
+// 🔥 UC11: Insert using Employee object
+public void addEmployeeObject(Employee emp) {
+
+    String query = "INSERT INTO employee_payroll (name, salary, start, gender) VALUES (?, ?, ?, ?)";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
+
+        ps.setString(1, emp.getName());
+        ps.setDouble(2, emp.getSalary());
+        ps.setDate(3, emp.getStartDate());
+        ps.setString(4, emp.getGender());
+
+        int rows = ps.executeUpdate();
+
+        System.out.println("Inserted via object: " + rows);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+// 🔥 UC10: Insert employee with full details
+public void addEmployeeWithDetails(String name, double salary, String startDate, String gender) {
+
+    String query = "INSERT INTO employee_payroll (name, salary, start, gender) VALUES (?, ?, ?, ?)";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
+
+        ps.setString(1, name);
+        ps.setDouble(2, salary);
+        ps.setDate(3, Date.valueOf(startDate)); // important
+        ps.setString(4, gender);
+
+        int rows = ps.executeUpdate();
+
+        System.out.println("Employee inserted successfully! Rows: " + rows);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
 }
 
     // 🔥 UC3: Update Salary
