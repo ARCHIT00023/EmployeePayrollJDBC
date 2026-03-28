@@ -12,9 +12,8 @@ public class EmployeePayrollService {
    public static void main(String[] args) {
     EmployeePayrollService service = new EmployeePayrollService();
 
-    service.updateSalaryPrepared("Mark", 3000000);
-    service.readData();
-    }
+    service.getEmployeesAfterDate("2019-01-01");
+}
 
     // 🔥 UC3: Update Salary
     // 🔥 UC4: Using PreparedStatement
@@ -102,6 +101,32 @@ public void updateSalaryPrepared(String name, double salary) {
         int rows = ps.executeUpdate();
 
         System.out.println("Updated rows: " + rows);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+ // 🔥 UC9: Get employees after a given date
+public void getEmployeesAfterDate(String date) {
+
+    String query = "SELECT * FROM employee_payroll WHERE start >= ?";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
+
+        ps.setDate(1, Date.valueOf(date));
+
+        ResultSet rs = ps.executeQuery();
+
+        System.out.println("Employees after " + date + ":");
+
+        while (rs.next()) {
+            System.out.println(
+                    rs.getInt("id") + " | " +
+                    rs.getString("name") + " | " +
+                    rs.getDouble("salary") + " | " +
+                    rs.getDate("start"));
+        }
 
     } catch (SQLException e) {
         e.printStackTrace();
