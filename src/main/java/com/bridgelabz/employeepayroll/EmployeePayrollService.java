@@ -8,10 +8,12 @@ public class EmployeePayrollService {
     private static final String USER = "archit";
     private static final String PASSWORD = "1234";
 
-    public static void main(String[] args) {
+    //main
+   public static void main(String[] args) {
     EmployeePayrollService service = new EmployeePayrollService();
 
-    service.getEmployeesByDateRange("2018-01-01", "2020-12-31");
+    service.addEmployee("Mark", 2500000, "2021-03-15", "M");
+    service.readData();   // verify insertion
 }
 
     // 🔥 UC3: Update Salary
@@ -58,6 +60,28 @@ public void getEmployeesByDateRange(String startDate, String endDate) {
                     rs.getDouble("salary") + " | " +
                     rs.getDate("start"));
         }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+// 🔥 UC7: Insert new employee
+public void addEmployee(String name, double salary, String startDate, String gender) {
+
+    String query = "INSERT INTO employee_payroll (name, salary, start, gender) VALUES (?, ?, ?, ?)";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
+
+        // Set parameters
+        ps.setString(1, name);
+        ps.setDouble(2, salary);
+        ps.setDate(3, Date.valueOf(startDate));
+        ps.setString(4, gender);
+
+        int rows = ps.executeUpdate();
+
+        System.out.println("Inserted rows: " + rows);
 
     } catch (SQLException e) {
         e.printStackTrace();
