@@ -12,9 +12,9 @@ public class EmployeePayrollService {
    public static void main(String[] args) {
     EmployeePayrollService service = new EmployeePayrollService();
 
-    service.addEmployee("Mark", 2500000, "2021-03-15", "M");
-    service.readData();   // verify insertion
-}
+    service.updateSalaryPrepared("Mark", 3000000);
+    service.readData();
+    }
 
     // 🔥 UC3: Update Salary
     // 🔥 UC4: Using PreparedStatement
@@ -82,6 +82,26 @@ public void addEmployee(String name, double salary, String startDate, String gen
         int rows = ps.executeUpdate();
 
         System.out.println("Inserted rows: " + rows);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+// 🔥 UC8: Update salary using PreparedStatement
+public void updateSalaryPrepared(String name, double salary) {
+
+    String query = "UPDATE employee_payroll SET salary = ? WHERE name = ?";
+
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
+
+        // set parameters
+        ps.setDouble(1, salary);
+        ps.setString(2, name);
+
+        int rows = ps.executeUpdate();
+
+        System.out.println("Updated rows: " + rows);
 
     } catch (SQLException e) {
         e.printStackTrace();
