@@ -9,27 +9,33 @@ public class EmployeePayrollService {
     private static final String PASSWORD = "1234";
 
     public static void main(String[] args) {
-        EmployeePayrollService service = new EmployeePayrollService();
+    EmployeePayrollService service = new EmployeePayrollService();
 
-        service.updateSalary("Terisa", 3500000);
-        service.readData();
-    }
+    service.updateSalary("Terisa", 4000000);  // update again
+    service.readData();
+}
 
     // 🔥 UC3: Update Salary
-    public void updateSalary(String name, double salary) {
-        String query = "UPDATE employee_payroll SET salary = " + salary + " WHERE name = '" + name + "'";
+    // 🔥 UC4: Using PreparedStatement
+public void updateSalary(String name, double salary) {
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD)) {
+    String query = "UPDATE employee_payroll SET salary = ? WHERE name = ?";
 
-            Statement stmt = con.createStatement();
-            int rows = stmt.executeUpdate(query);
+    try (Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
+         PreparedStatement ps = con.prepareStatement(query)) {
 
-            System.out.println("Updated rows: " + rows);
+        // Set parameters
+        ps.setDouble(1, salary);
+        ps.setString(2, name);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        int rows = ps.executeUpdate();
+
+        System.out.println("Updated rows: " + rows);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     // UC2 reused
     public void readData() {
